@@ -1,5 +1,4 @@
 import { Angle } from "./Angle";
-import { Bond } from "./bond"
 import { Vector } from "./VectorMath";
 
 export type position = {x: number,y: number}
@@ -9,7 +8,6 @@ type acceleration = Vector
 
 export class Particle {
     public pos: position
-    private bonds: Bond[] = []
     private forces: force[] = []
     private mass: number
     private velocity : velocity = new Vector(0, 0)
@@ -18,17 +16,6 @@ export class Particle {
     constructor(pos: position, mass: number = 10) {
         this.pos = pos
         this.mass = mass
-    }
-
-    public bondToParticle(target: Particle, distance: number, rate: number): void {
-        const newBond: Bond = new Bond(this, target, distance, rate)
-        this.bonds.push(newBond)
-        target.addBond(newBond)
-    }
-
-    public addBond(bond: Bond): void {
-        if(!this.bonds.includes(bond)) 
-            this.bonds.push(bond)
     }
 
     private totalAcceleration(): acceleration {
@@ -59,19 +46,6 @@ export class Particle {
 
     public addForce(force: force): void {
         this.forces.push(force)
-    }
-
-    public calcShapeArea(area: number = 0, addedBonds: Bond[] = []): number {
-        this.bonds.forEach(bond => {
-            if(!addedBonds.includes(bond)) {
-                area += bond.gaussSum()
-                addedBonds.push(bond)
-
-                area += bond.particles.to.calcShapeArea(area, addedBonds)
-            }
-        })
-
-        return area
     }
 
     private keepInVeiw(canvasDim: {x: number, y: number}): void {

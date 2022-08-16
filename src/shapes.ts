@@ -1,9 +1,11 @@
 import { Angle } from "./Angle";
+import { Bond } from "./bond";
 import { Particle, position } from "./particle";
 import { Vector } from "./VectorMath";
 
 export class Circle {
     private _particles : Particle[] = []
+    private _bonds : Bond[] = []
     private _forces : Vector[] = []
     
     constructor(radius: number, particles: number = 36, mass: number = 5, pressure : number = 10, rate : number = 10) {
@@ -33,12 +35,23 @@ export class Circle {
             }
 
             const nextParticle : Particle = particles === 1 ? startParticle : new Particle(pos)
-            currParticle.bondToParticle(nextParticle, bondLength, rate)
+            
+            this._bonds.push(new Bond(currParticle, nextParticle, bondLength, rate))
 
             currParticle = nextParticle
 
             
         }
+    }
+
+    public calcShapeArea(): number {
+        let area = 0
+        
+        this._bonds.forEach(bond => {
+            area += bond.gaussSum()
+        })
+
+        return area
     }
 
     private getCenter(): position {

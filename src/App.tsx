@@ -1,4 +1,3 @@
-import { stat } from 'fs';
 import React, { Component } from 'react';
 import './App.css';
 import { Circle } from './shapes';
@@ -39,8 +38,8 @@ class View extends Component < ViewProps, ViewState > {
         this.canvasContext = canvasContext
       }     
     }
-
-    window.requestAnimationFrame(() => {this.paint()})
+    
+    this.paint()
   }
 
   paint() {
