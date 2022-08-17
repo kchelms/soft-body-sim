@@ -54,7 +54,7 @@ class Vector {
   }
 
   normal(): Vector {
-    return new Vector(this.magnitude, Angle.boundAngle(this.angle + 90))
+    return new Vector(this.magnitude, this.angle + 90)
   }
 }
 

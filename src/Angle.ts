@@ -25,10 +25,6 @@ export class Angle {
         return Math.cos(angle_deg)
     }
 
-    static tan(angle_deg: number): number {
-        return this.sin(angle_deg) / this.cos(angle_deg)
-    }
-
     static angleFromComponents(y: number, x: number): number {
         const rad_result = Math.atan2(y, x)
     

@@ -4,22 +4,37 @@ import { Particle, position } from "./particle";
 import { Vector } from "./VectorMath";
 
 export class Circle {
-    private _particles : Particle[] = []
-    private _bonds : Bond[] = []
-    private _forces : Vector[] = []
+    private _particles: Particle[] = []
+    private _bonds: Bond[] = []
+    private _forces: Vector[] = []
+    private _pressure: number
+    private _normalArea: number
     
-    constructor(radius: number, particles: number = 36, mass: number = 5, pressure : number = 10, rate : number = 10) {
-        this.assembleShape(radius, particles, rate)
+    constructor(radius: number, particles: number = 36, mass: number = 1000, pressure : number = 10, rate : number = 20) {
+        this.assembleShape(radius, particles, rate, mass)
+        this._normalArea = this.calcShapeArea()
+        this._pressure = pressure
     }
 
-    private assembleShape(radius: number, particles: number, rate: number): void {
+    private calcBondLength(radius: number, angle: number): number {
+        const cos = Angle.cos(angle)
+        const hyp = radius * cos
+
+        let base = (radius * radius) + (hyp * hyp)
+        base = Math.sqrt(base)
+
+        return base / 2
+    }
+
+    private assembleShape(radius: number, particles: number, rate: number, mass: number): void {
         const bondAngle : number = 360 / particles
-        const bondLength : number = Angle.tan(bondAngle) * radius
+        const bondLength : number = this.calcBondLength(radius, bondAngle)
+        const particleMass = mass / particles
         
         const center : position = { x : 250, y : 250 }
         let nextParticleVector : Vector = new Vector(radius, 90)
 
-        const startParticle : Particle = new Particle(Object.assign({}, {x: center.x, y: center.y + radius}))
+        const startParticle : Particle = new Particle({x: center.x, y: center.y + radius}, particleMass , false)
         let currParticle: Particle = startParticle
         
         for(; particles > 0; particles--) {
@@ -34,7 +49,7 @@ export class Circle {
                 y: center.y + nextParticleVector_Components.y
             }
 
-            const nextParticle : Particle = particles === 1 ? startParticle : new Particle(pos)
+            const nextParticle : Particle = particles === 1 ? startParticle : new Particle(pos, particleMass)
             
             this._bonds.push(new Bond(currParticle, nextParticle, bondLength, rate))
 
@@ -68,9 +83,56 @@ export class Circle {
         return center
     }
 
-    public paint(canvasContext: CanvasRenderingContext2D): void {
-        this._particles.forEach(particle => {
-            particle.paint(canvasContext)
+    private addPressureForce(): void {
+        const currentArea = this.calcShapeArea()
+        const pressure = (this._normalArea * this._pressure) / currentArea
+
+        if(isNaN(pressure))
+            console.error('Pressure:', pressure)
+        
+        this._bonds.forEach(bond => bond.addPressureForce(pressure))
+    }
+
+    private paintArea(canvasContext: CanvasRenderingContext2D): void {
+        const startParticlePos = this._particles[0].pos
+
+        canvasContext.moveTo(startParticlePos.x, canvasContext.canvas.height - startParticlePos.y)
+
+        this._particles.forEach((particle, i) => {
+            if(i > 0)                
+                canvasContext.lineTo(particle.pos.x, canvasContext.canvas.height - particle.pos.y)
         })
+
+        const currentArea = this.calcShapeArea()
+        const areaRatio = (currentArea - this._normalArea) / this._normalArea
+
+        const fillColor = {
+            r: areaRatio < 0 ? Math.ceil((-areaRatio) * 256) : 0,
+            b: areaRatio >= 0 ? Math.ceil((areaRatio / 10) * 255) : 0
+        }
+
+        canvasContext.closePath()
+
+        canvasContext.fillStyle = "rgba(" + (255 - fillColor.b) + "," + (255 - fillColor.b - fillColor.r) + "," + (255 - fillColor.r) +",240)"
+        canvasContext.fill()
+    }
+
+    private paintCenter(canvasContext: CanvasRenderingContext2D) : void {
+        canvasContext.beginPath()
+        const center = this.getCenter()
+        canvasContext.arc(center.x, canvasContext.canvas.height - center.y, 5, 0, Angle.degreesToRad(360))
+        canvasContext.fillStyle = "green"
+        canvasContext.fill()
+    }
+
+    public paint(canvasContext: CanvasRenderingContext2D): void {
+        this.addPressureForce()
+        this._bonds.forEach(bond => bond.addTensionForce())
+
+        this.paintArea(canvasContext)
+        this.paintCenter(canvasContext)
+
+        this._bonds.forEach(bond => bond.paint(canvasContext))
+        this._particles.forEach(particle => particle.paint(canvasContext))        
     }
 }

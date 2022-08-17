@@ -24,9 +24,8 @@ class View extends Component < ViewProps, ViewState > {
       frames: 0
     }
 
-    this.circle = new Circle(50, 66)
+    this.circle = new Circle(50, 15)
   }
-
 
   componentDidMount(): void {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement

@@ -12,10 +12,12 @@ export class Particle {
     private mass: number
     private velocity : velocity = new Vector(0, 0)
     private lastFrame: number = Date.now()
+    private _fixed: boolean
     
-    constructor(pos: position, mass: number = 10) {
+    constructor(pos: position, mass: number = 10, fixed: boolean = false) {
         this.pos = pos
         this.mass = mass
+        this._fixed = fixed
     }
 
     private totalAcceleration(): acceleration {
@@ -23,9 +25,11 @@ export class Particle {
 
         this.forces.forEach(force => totalForce = Vector.combineVectors(totalForce, force))
 
-        let totalAcceleration = new Vector(totalForce.magnitude * this.mass, totalForce.angle)
+        let totalAcceleration = new Vector(totalForce.magnitude / this.mass, totalForce.angle)
 
-        return Vector.combineVectors(totalAcceleration, new Vector(9.8, 270))
+        //totalAcceleration = Vector.combineVectors(totalAcceleration, new Vector(9.8, 270))
+
+        return totalAcceleration
     }
 
     private move(): void {
@@ -68,7 +72,8 @@ export class Particle {
             y: canvasContext.canvas.height
         }
 
-        this.move()
+        if(!this._fixed)
+            this.move()
 
         this.keepInVeiw(canvasDim)
 
