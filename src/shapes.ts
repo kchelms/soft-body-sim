@@ -113,7 +113,7 @@ export class Circle {
 
         canvasContext.closePath()
 
-        canvasContext.fillStyle = "rgba(" + (255 - fillColor.b) + "," + (255 - fillColor.b - fillColor.r) + "," + (255 - fillColor.r) +",240)"
+        canvasContext.fillStyle = "rgba(" + (255 - fillColor.b) + "," + (255 - fillColor.b - fillColor.r) + "," + (255 - fillColor.r) +",0.5)"
         canvasContext.fill()
     }
 
