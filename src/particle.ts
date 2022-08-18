@@ -27,23 +27,27 @@ export class Particle {
 
         let totalAcceleration = new Vector(totalForce.magnitude / this.mass, totalForce.angle)
 
-        //totalAcceleration = Vector.combineVectors(totalAcceleration, new Vector(9.8, 270))
+        totalAcceleration = Vector.combineVectors(totalAcceleration, new Vector(9.8, 270))
 
         return totalAcceleration
     }
 
     private move(): void {
         const acceleration = this.totalAcceleration()
-        const timeSinceLastFrame = (Date.now() - this.lastFrame) / 1000
+        const timeSinceLastFrame = (Date.now() - this.lastFrame) / 100000
 
         const dV = new Vector((acceleration.magnitude * timeSinceLastFrame * 0.5), acceleration.angle)
 
-        const resultant_v = Vector.combineVectors(this.velocity, dV)
+        this.velocity = Vector.combineVectors(this.velocity, dV)
+        const v_components = this.velocity.getVectorComponents()
 
-        const d_components = new Vector(resultant_v.magnitude * timeSinceLastFrame, resultant_v.angle).getVectorComponents()
+        const d_components = {
+            x: v_components.x * timeSinceLastFrame,
+            y: v_components.y * timeSinceLastFrame
+        }
         
-        this.pos.x += d_components.x
-        this.pos.y += d_components.y
+        this.pos.x += (d_components.x / 1000)
+        this.pos.y += (d_components.y / 1000)
 
         this.forces = []
     }
@@ -53,17 +57,21 @@ export class Particle {
     }
 
     private keepInVeiw(canvasDim: {x: number, y: number}): void {
-        if(this.pos.x < 0)
+        if(this.pos.x < 0) {
             this.pos.x = 0
+        }
 
-        if(this.pos.y < 0)
+        if(this.pos.y < 0) {
             this.pos.y = 0
+        }
 
-        if(this.pos.x > canvasDim.x)
+        if(this.pos.x > canvasDim.x) {
             this.pos.x = canvasDim.y
+        }
 
-        if(this.pos.y > canvasDim.y)
+        if(this.pos.y > canvasDim.y) {
             this.pos.y = canvasDim.y
+        }
     }
 
     public paint(canvasContext: CanvasRenderingContext2D): void {
@@ -82,6 +90,6 @@ export class Particle {
         canvasContext.arc(this.pos.x, canvasDim.y - this.pos.y, 5, 0, Angle.degreesToRad(360))
 
         canvasContext.fillStyle = "red"
-        canvasContext.fill()
+        //canvasContext.fill()
     }
 }

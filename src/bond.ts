@@ -36,7 +36,7 @@ export class Bond {
         if(Math.abs(bondVector.magnitude) > this.normal_length) {
             const stretchAmt = bondVector.magnitude - this.normal_length
 
-            let tenionForce = Math.pow(this.rate, 1 + (stretchAmt / this.normal_length))
+            let tenionForce = this.rate * (stretchAmt / this.normal_length) / 2
             tenionForce = tenionForce > 0 ? tenionForce : 0
 
             this.particles.from.addForce(new Vector(tenionForce, bondVector.angle))
@@ -48,7 +48,7 @@ export class Bond {
         const pressureAngle = this.getNormalVector().angle
         const length = this.getBondVector().magnitude
 
-        const pressureForceMagnitude = 0.5 * pressure * length
+        const pressureForceMagnitude = pressure * length / 2
 
         this.particles.from.addForce(new Vector(pressureForceMagnitude, pressureAngle))
         this.particles.to.addForce(new Vector(pressureForceMagnitude, pressureAngle))
@@ -70,7 +70,7 @@ export class Bond {
         canvasContext.beginPath()
         canvasContext.moveTo(fromPos.x, canvasContext.canvas.height - fromPos.y)
         canvasContext.lineTo(toPos.x, canvasContext.canvas.height - toPos.y)
-        canvasContext.strokeStyle = "pink"
+        canvasContext.strokeStyle = "blue"
         canvasContext.stroke()
     }
 }

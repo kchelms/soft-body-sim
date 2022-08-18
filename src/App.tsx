@@ -24,7 +24,7 @@ class View extends Component < ViewProps, ViewState > {
       frames: 0
     }
 
-    this.circle = new Circle(50, 15)
+    this.circle = new Circle(50, 180)
   }
 
   componentDidMount(): void {

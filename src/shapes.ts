@@ -10,20 +10,20 @@ export class Circle {
     private _pressure: number
     private _normalArea: number
     
-    constructor(radius: number, particles: number = 36, mass: number = 1000, pressure : number = 10, rate : number = 20) {
+    constructor(radius: number, particles: number = 36, mass: number = 5, pressure : number = 1, rate : number = 100) {
         this.assembleShape(radius, particles, rate, mass)
         this._normalArea = this.calcShapeArea()
         this._pressure = pressure
     }
 
     private calcBondLength(radius: number, angle: number): number {
-        const cos = Angle.cos(angle)
-        const hyp = radius * cos
+        const cos = Angle.cos(angle / 2)
+        const h = radius * cos
 
-        let base = (radius * radius) + (hyp * hyp)
+        let base = (radius * radius) - (h * h)
         base = Math.sqrt(base)
 
-        return base / 2
+        return base * 2
     }
 
     private assembleShape(radius: number, particles: number, rate: number, mass: number): void {
@@ -54,8 +54,6 @@ export class Circle {
             this._bonds.push(new Bond(currParticle, nextParticle, bondLength, rate))
 
             currParticle = nextParticle
-
-            
         }
     }
 
@@ -84,7 +82,8 @@ export class Circle {
     }
 
     private addPressureForce(): void {
-        const currentArea = this.calcShapeArea()
+        let currentArea = this.calcShapeArea()
+        currentArea = currentArea ? currentArea : Number.MIN_SAFE_INTEGER
         const pressure = (this._normalArea * this._pressure) / currentArea
 
         if(isNaN(pressure))
@@ -104,6 +103,7 @@ export class Circle {
         })
 
         const currentArea = this.calcShapeArea()
+
         const areaRatio = (currentArea - this._normalArea) / this._normalArea
 
         const fillColor = {
