@@ -81,16 +81,31 @@ export class Circle {
         return center
     }
 
-    private addPressureForce(): void {
+    private calcPressureForce(): number {
         let currentArea = this.calcShapeArea()
         currentArea = currentArea ? currentArea : Number.MIN_SAFE_INTEGER
+        
         const pressure = (this._normalArea * this._pressure) / currentArea
 
-        if(isNaN(pressure))
-            console.error('Pressure:', pressure)
-        
-        this._bonds.forEach(bond => bond.addPressureForce(pressure))
+        return pressure
     }
+
+    private addTotalSystemForces(): void {
+        let pressure = this.calcPressureForce()
+
+        this._bonds.forEach(bond => {
+            bond.addTensionForce()
+            bond.addPressureForce(pressure)
+        })
+    }
+
+    public move(elapsed_sec: number) {
+        this.addTotalSystemForces()
+
+        this._particles.forEach(particle => particle.move(elapsed_sec))
+    }
+
+    //View Rendering Methods
 
     private paintArea(canvasContext: CanvasRenderingContext2D): void {
         const startParticlePos = this._particles[0].pos
@@ -126,8 +141,7 @@ export class Circle {
     }
 
     public paint(canvasContext: CanvasRenderingContext2D): void {
-        this.addPressureForce()
-        this._bonds.forEach(bond => bond.addTensionForce())
+        
 
         this.paintArea(canvasContext)
         this.paintCenter(canvasContext)

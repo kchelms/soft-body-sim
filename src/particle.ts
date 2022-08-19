@@ -32,18 +32,17 @@ export class Particle {
         return totalAcceleration
     }
 
-    private move(): void {
+    public move(elapsed_sec: number): void {
         const acceleration = this.totalAcceleration()
-        const timeSinceLastFrame = (Date.now() - this.lastFrame) / 100000
 
-        const dV = new Vector((acceleration.magnitude * timeSinceLastFrame * 0.5), acceleration.angle)
+        const dV = new Vector((acceleration.magnitude * elapsed_sec * 0.5), acceleration.angle)
 
         this.velocity = Vector.combineVectors(this.velocity, dV)
         const v_components = this.velocity.getVectorComponents()
 
         const d_components = {
-            x: v_components.x * timeSinceLastFrame,
-            y: v_components.y * timeSinceLastFrame
+            x: v_components.x * elapsed_sec,
+            y: v_components.y * elapsed_sec
         }
         
         this.pos.x += (d_components.x / 1000)
@@ -80,9 +79,6 @@ export class Particle {
             y: canvasContext.canvas.height
         }
 
-        if(!this._fixed)
-            this.move()
-
         this.keepInVeiw(canvasDim)
 
         canvasContext.beginPath()     
@@ -90,6 +86,6 @@ export class Particle {
         canvasContext.arc(this.pos.x, canvasDim.y - this.pos.y, 5, 0, Angle.degreesToRad(360))
 
         canvasContext.fillStyle = "red"
-        //canvasContext.fill()
+        canvasContext.fill()
     }
 }

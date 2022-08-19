@@ -29,7 +29,7 @@ class Vector {
     const magnitude = Math.sqrt(x * x + y * y)
     const angle = Angle.angleFromComponents(y, x)
 
-    return new Vector(magnitude > 1e-10 ? magnitude : 0, angle)
+    return new Vector(magnitude > 1e-5 ? magnitude : 0, angle)
   }
 
   static combineVectors(vector_a: Vector, vector_b: Vector): Vector {
