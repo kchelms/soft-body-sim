@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/soft-body-sim/static/css/main.073c9b0a.css",
-    "main.js": "/soft-body-sim/static/js/main.5f5bdb42.js",
+    "main.js": "/soft-body-sim/static/js/main.b479c6b5.js",
     "static/js/787.49658156.chunk.js": "/soft-body-sim/static/js/787.49658156.chunk.js",
     "index.html": "/soft-body-sim/index.html",
     "main.073c9b0a.css.map": "/soft-body-sim/static/css/main.073c9b0a.css.map",
-    "main.5f5bdb42.js.map": "/soft-body-sim/static/js/main.5f5bdb42.js.map",
+    "main.b479c6b5.js.map": "/soft-body-sim/static/js/main.b479c6b5.js.map",
     "787.49658156.chunk.js.map": "/soft-body-sim/static/js/787.49658156.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.5f5bdb42.js"
+    "static/js/main.b479c6b5.js"
   ]
 }
